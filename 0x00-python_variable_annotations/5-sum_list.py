@@ -1,7 +1,5 @@
 #!/usr/bin/env python3
 """Returns sum of an array"""
-
-
 from typing import List
 
 
