@@ -15,7 +15,7 @@ from typing import Any, List, Tuple
 
 def zoom_array(lst: Tuple, factor: int = 2) -> List:
     zoomed_in: List = [
-            item for i in range(factor)
+            item for _ in range(factor)
             for item in lst
             ] 
 
