@@ -59,13 +59,13 @@ class TestMemoize(unittest.TestCase):
         """test the memoize function"""
         class TestClass:
             def a_method(self):
-                return None
+                return 42
 
             @memoize
             def a_property(self):
                 return self.a_method()
         obj = TestClass()
-        obj.a_method = MagicMock(return_value=None)
+        obj.a_method = MagicMock(return_value=42)
         result_1 = obj.a_property
         result_2 = obj.a_property
         self.assertEqual(result_1, result_2)
