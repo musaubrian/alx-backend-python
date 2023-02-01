@@ -11,7 +11,7 @@ from unittest.mock import MagicMock, patch, Mock
 class TestAccessNestedMap(unittest.TestCase):
     """defines test cases for utils"""
 
-    @parametarized.expand(
+    @parameterized.expand(
         [
             ({"a": 1}, ("a",), 1),
             ({"a": {"b": 2}}, ("a",), {"b": 2}),
@@ -24,12 +24,11 @@ class TestAccessNestedMap(unittest.TestCase):
         """test access_nested_map"""
         self.assertEqual(access_nested_map(nested_map, path), expected)
 
-    @parametarized.expand([
-        ({}, ("a",), KeyError),
-        ({"a": 1}, ("a", "b"), KeyError)
+    @parameterized.expand([
+        ({}, ("a",), KeyError), ({"a": 1}, ("a", "b"), KeyError)
     ])
-    def test_access_nested_map_exception(self, nested_map: Mapping,
-                                         path: Sequence):
+    def test_access_nested_map_exception(
+            self, nested_map: Mapping, path: Sequence) -> None:
         """test if KeyError is raised"""
         with self.assertRaises(KeyError) as cm:
             access_nested_map(nested_map, path)
@@ -39,12 +38,13 @@ class TestAccessNestedMap(unittest.TestCase):
 
 class TestGetJson(unittest.TestCase):
     """test getJson methods"""
-    @parametarized.expand(
-            [
-                ("http://example.com", {"payload": True}),
-                ("http://holberton.io", {"payload": False}),
-                ]
-            )
+
+    @parameterized.expand(
+        [
+            ("http://example.com", {"payload": True}),
+            ("http://holberton.io", {"payload": False}),
+        ]
+    )
     def test_get_json(self, test_url: str, test_payload: Dict) -> None:
         """test get_json function"""
         attr = {"json.return_value": test_payload}
@@ -55,8 +55,10 @@ class TestGetJson(unittest.TestCase):
 
 class TestMemoize(unittest.TestCase):
     """Defines tests for the memoize function"""
+
     def test_memoize(self) -> None:
         """test the memoize function"""
+
         class TestClass:
             def a_method(self):
                 return 42
@@ -64,9 +66,14 @@ class TestMemoize(unittest.TestCase):
             @memoize
             def a_property(self):
                 return self.a_method()
+
         obj = TestClass()
         obj.a_method = MagicMock(return_value=42)
         result_1 = obj.a_property
         result_2 = obj.a_property
         self.assertEqual(result_1, result_2)
         obj.a_method.assert_called_once()
+
+
+if __name__ == "__main__":
+    unittest.main()
