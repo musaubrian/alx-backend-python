@@ -4,8 +4,9 @@
 from typing import Dict
 import unittest
 from unittest.mock import PropertyMock, patch
-from parameterized import parameterized
+from parameterized import parameterized, parameterized_class
 from client import GithubOrgClient
+from fixtures import TEST_PAYLOAD
 
 
 class TestGithubOrgClient(unittest.TestCase):
@@ -51,8 +52,9 @@ class TestGithubOrgClient(unittest.TestCase):
             org_client = GithubOrgClient("some_org")
             result = org_client.public_repos()
 
-            self.assertEqual(result, mock_payload)
+            self.assertEqual(result, ["pay", "pay2"])
             mock_public_repos_url.assert_called_once()
+            mock_get_json.assert_called_once()
 
     @parameterized.expand(
         [
@@ -68,3 +70,43 @@ class TestGithubOrgClient(unittest.TestCase):
         """
         result = GithubOrgClient.has_license(repo, license_key)
         self.assertEqual(result, expected)
+
+
+@parameterized_class(
+    ["org_payload", "repos_payload", "expected_repos", "apache2_repos"],
+    TEST_PAYLOAD
+)
+class TestIntegrationGithubOrgClient(unittest.TestCase):
+    """
+    Defines integration tests for GithubOrgClient
+    """
+
+    @classmethod
+    def setUpClass(cls) -> None:
+        """return example payloads found in the fixtures"""
+        mock_config = {
+            "return_value.json.side_effect": [
+                cls.org_payload,
+                cls.repos_payload,
+                cls.org_payload,
+                cls.repos_payload,
+            ]
+        }
+        cls.get_patcher = patch("requests.get", **mock_config)
+        cls.get_patcher.start()
+
+    @classmethod
+    def tearDownClass(cls) -> None:
+        """stops the patcher"""
+        cls.get_patcher.stop()
+
+    def test_public_repos(self) -> None:
+        """
+        Integration test for GithubOrgClient.public_repos
+        """
+        org_client = GithubOrgClient("google")
+        self.assertEqual(org_client.org, self.org_payload)
+        self.assertEqual(org_client.repos_payload, self.repos_payload)
+
+if __name__ == "__main__":
+    unittest.main()
